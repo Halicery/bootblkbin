@@ -13,17 +13,14 @@
 ; https://github.com/Halicery/Bootblkbin
 
 
-org 0x7C00            ; suppose 0000:7C00 CS:IP
-
-
-;VESAMODE EQU 110h      ; 110h 640x480 15
-;VESAMODE EQU 111h      ; 111h 640x480 16 600KB
+VESAMODE EQU 111h      ; 111h 640x480 16 600KB
 ;VESAMODE EQU 112h      ; 112h 640x480 16.8M (8:8:8)   <-- Hy, D430 reports back 32-bpp
-VESAMODE EQU 114h      ; 114h 800x600 16 938KB
+;VESAMODE EQU 114h      ; 114h 800x600 16 938KB
 ;VESAMODE EQU 117h      ; 117h 1024x768 16 1536KB 
 ;VESAMODE EQU 118h      ; 118h 1024x768 16.8M (8:8:8)  <-- Hy, D430 reports back 32-bpp
 ;VESAMODE EQU 11Ah      ; 11Ah 1280x1024 64K (5:6:5)   16 2560KB (Haswell works)
 ;VESAMODE EQU 11Bh      ; 11Bh 1280x1024 32        (Haswell ok)
+;VESAMODE EQU 110h      ; 110h 640x480 15
  
 ; Old D430 with the same panel does NOT support this 
 ; E4200 laptop with 1280x800 panel. No other recognises this mode. 
@@ -43,7 +40,7 @@ VESAPITCH EQU VESAWIDTH*VESABPP
 [BITS 64]
 GO64:
 
-  ; EBP is LFB address from vesa_prologue
+  ; LFB address from vesa_prologue: EBP
 
   ; Fill screen
   mov edi, ebp 

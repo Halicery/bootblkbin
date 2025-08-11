@@ -2,47 +2,42 @@
 ;   Include file for 64-bit kick in. What's left is set PG and PE in CR0.
 ; 
 ;   64-bit mode requires PAE=1 with new paging: PML4E 
-;   PAE entries are 64-bit, 8-bytes. 
 ;
-;   So we set up simplest possible Paging tables to linear map 4GB memory:
+;   Here we set up the simplest possible paging using 2MB page entries to map 4GB linear memory:
 ;   
 ;   - 4 x 4K PS=1 2MB page entries at 0x1000-0x4FFF
 ;   - 4 entries at 0x5000 for each GB
 ;   - one PML4E entry at 0x6000
+;   - all PAE entries are 64-bit, 8-bytes
 ;
 ; https://github.com/Halicery/Bootblkbin
 
-;
-;                                      same as PAE                             
-;   <---------------------><----------------><----------------------><----------->
+; 47.....39              38..30                     29..21          20..0
+; (9 bit)                (9 bit)                    (9 bit)         (21 bit)   
+;                                                   
+; <-------------------><----------------------><------------------><----------->
 ; 
-;   47.....39              38..30                     29..21              20..0
-;   (9 bit)                (9 bit)                    (9 bit)             (21 bit)   
-;                                                     
-;   512 entries            512 entries                512 64-bit entries   2M Offs
-;   64-bit                 64-bit                     
-                           
-;      1 X                      4 X                      4 X 512
-;  8-byte entry             8-byte entry              8-byte entry
+;  1 x                    4 x                       4 x 512          2M OFFS
+;  8-byte entry           8-byte entry              8-byte entry
 ;
-;   0x6000                  0x5000                     0x1000-0x4FFF
-
-; +-----------+            +-----------+    0x1000    +-----------+
-; |  PML4E    |  ------->  |    1GB    |   -------->  |    2MB    |          
-; +-----------+            +-----------+              +-----------+
-;      ^                   |    1GB    |  ---+        |    2MB    |
-;      |                   +-----------+     |        +-----------+
-;     CR3                  |    1GB    |     |        |    ...    |
-;                          +-----------+     |       
-;                          |    1GB    |     +--->    +-----------+
-;                          +-----------+     0x2000   |    2MB    |
-;                                                     +-----------+
-;                                                     |    ...    |
+;   0x6000                0x5000                     0x1000-0x4FFF
 ;
-;   Page-Map               Page-Directory              Page     
-;   Level-4                Pointer                     Directory
-;   Table                  Table                       Table    
-;   4K-aligned             4K-aligned                  4K-aligned       
+; +-----------+          +-----------+    0x1000    +-----------+
+; |  PML4E    |  ----->  |    1GB    |   -------->  |    2MB    |          
+; +-----------+          +-----------+              +-----------+
+; |    ^      |          |    1GB    |  ---+        |    2MB    |
+;      |                 +-----------+     |        +-----------+
+;     CR3                |    1GB    |     |        |    ...    |
+;                        +-----------+     |       
+;                        |    1GB    |     +--->    +-----------+
+;                        +-----------+     0x2000   |    2MB    |
+;                        |           |              +-----------+
+;                                                   |    ...    |
+;
+;   Page-Map             Page-Directory              Page     
+;   Level-4              Pointer                     Directory
+;   Table                Table                       Table    
+;   4K-aligned           4K-aligned                  4K-aligned       
 
 [BITS 16]
 
@@ -51,7 +46,8 @@ MakePML4E16:
     ;
     ; There are two auto-inc/dec thing in 8086: stos and push. 
     ; Here we use push with its auto-decrement. So tables are filled from top to bottom.
-    ; PUSH can sign-extend bytes so code is more compact (we write many zeroes, but now EDX) 
+    ; PUSH can sign-extend bytes so code is more compact (we write many zeroes, now from DX instead) 
+    ; PUSH reg is one-byte opcode, make this code compact
     ; SS=0 from prologue
     
     ; Set only one PML4E and set CR3 point here: 0x6000
@@ -72,37 +68,30 @@ MakePML4E16:
     .5: PUSH DX
     PUSH DX
     PUSH DX
-    SUB  AX, 4096    ; sub 4K, next PDE page (4001.. 3001.. 2001.. 1001)
+    SUB  AX, 4096       ; sub 4K, next PDE page (4001.. 3001.. 2001.. 1001)
     PUSH AX      
     LOOP .5       
     
     ; Fill 4 x 4K PD with 4x512 64-bit entries, linear mapping of whole 4GB
     XOR AX, AX
-    MOV CH, 8              ; save one byte. CX = 4*512 = 0800h
-    .4: PUSH DX
-    PUSH DX
-    SUB  AX, 0x20          ; sub 2MB
-    PUSH AX
-    PUSH 1<<7 | 1  ; set PS-bit (2MB page size), present. PAE: Writable is ignored in CPL=0 and CR0.WP=0  
+    MOV CH, 8           ; save one byte. CX = 4*512 = 0800h
+    .4: PUSH DX       
+    PUSH DX           
+    SUB  AX, 0x20       ; sub 2MB (AX=HI)
+    PUSH AX           
+    PUSH 1<<7 | 1       ; LO: set PS-bit (2MB page size), present. PAE: Writable is ignored in CPL=0 and CR0.WP=0  
     LOOP .4      
     
     ; Enable PAE
     MOV EAX, CR4  
-    OR AL, 1<<5           ; set PAE-bit (PSE is ignored by PAE paging)
+    OR AL, 1<<5         ; set PAE-bit (PSE is ignored by PAE paging)
     MOV CR4, EAX     
     
     ; Enable Long Mode 
     ; RDMSR: reg specified in the ECX register -> into registers EDX:EAX
-    MOV ECX, 0xC0000080   ; EFER reg
+    MOV ECX, 0xC0000080 ; EFER reg
     RDMSR   
     INC AH              ; save one byte for OR AX, 1<<8       ; Set LME Long Mode Enable: bit 8  
     WRMSR               ; my VBox 6.1 sometimes die here(?)
     
     ;MOV SP, $$         ; or just leave it at 0x1000 (4K) No IVT here.  
-    
-    ; mess with SS for 64-bit iret 
-    ;push 8 ; make it non-null selector for PE=1 and iret pop: CRASH. Hw tries to fetch and sees wrong descriptor on iret.
-    ;pop ss
-    ;mov sp, 0x9000
-
-    

@@ -1,6 +1,6 @@
 ; ******************************************************************************************************
 ;   
-;   Just a common 16-bit startup: the first instruction executed
+;   The common 16-bit startup: the first instructions executed
 ;   
 ;   - disable interrupts
 ;   - zero segregs DS ES (suppose CS=0)
@@ -13,6 +13,8 @@
 ;   Leaves ES=0xB800 for character screen base
 ;
 ; https://github.com/Halicery/Bootblkbin
+
+org 0x7C00            ; suppose 0000:7C00 CS:IP
 
 [BITS 16]
   CLI
@@ -27,7 +29,7 @@
   POP  DS
   PUSH CS  ; zero SS  
   POP  SS
-  MOV  ESP, $$ ; Haswell needed proper stack. Just make sure ESP HI zero for 32? ($$ beginnig of section. We have only on .text in bin)
+  MOV  ESP, $$ ; Haswell needed proper stack. And make sure ESP HI zero for later ($$ beginning of section. We have only one .text in bin)
 
   ; fun: put stack at screen
   ;push 0xb800
