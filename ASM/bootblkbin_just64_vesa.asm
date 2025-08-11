@@ -17,19 +17,19 @@ org 0x7C00            ; suppose 0000:7C00 CS:IP
 
 
 ;VESAMODE EQU 110h      ; 110h 640x480 15
-VESAMODE EQU 111h      ; 111h 640x480 16 600KB
+;VESAMODE EQU 111h      ; 111h 640x480 16 600KB
 ;VESAMODE EQU 112h      ; 112h 640x480 16.8M (8:8:8)   <-- Hy, D430 reports back 32-bpp
-;VESAMODE EQU 114h      ; 114h 800x600 16 938KB
+VESAMODE EQU 114h      ; 114h 800x600 16 938KB
 ;VESAMODE EQU 117h      ; 117h 1024x768 16 1536KB 
 ;VESAMODE EQU 118h      ; 118h 1024x768 16.8M (8:8:8)  <-- Hy, D430 reports back 32-bpp
 ;VESAMODE EQU 11Ah      ; 11Ah 1280x1024 64K (5:6:5)   16 2560KB (Haswell works)
 ;VESAMODE EQU 11Bh      ; 11Bh 1280x1024 32        (Haswell ok)
  
-    ; Old D430 with the same panel does NOT support this 
-    ; E4200 laptop with 1280x800 panel. No other recognises this mode. 
-    ;VESAMODE  EQU 160h      ; 161h 1280x800 16 <-- works on my E4200 laptop! Wiki mentions 160h for 8-bit.. so I tried 161h.
-    ;VESAWIDTH  EQU 1280     ; 162h 1280x800 32-bpp!!! cool
-    ;VESAHEIGHT EQU 800      ; 
+; Old D430 with the same panel does NOT support this 
+; E4200 laptop with 1280x800 panel. No other recognises this mode. 
+;VESAMODE   EQU 161h     ; 161h 1280x800 16 <-- works on my E4200 laptop! Wiki mentions 160h for 8-bit.. so I tried 161h.
+;VESAWIDTH  EQU 1280     ; 162h 1280x800 32-bpp!!! cool
+;VESAHEIGHT EQU 800      ; 
 
 
 %include "inc.vesa_prologue.asm" 
