@@ -1,3 +1,5 @@
+[[/SCREENSHOT/run16above.png]]
+
 # Boot block &eacute;tudes 
 
 ## What is this? 
@@ -86,7 +88,11 @@ In bootblock we do not align anything to save code bytes. Also good for testing 
 
 I was wondering how to execute D=0 16-bit code way above 1MB high in memory. CPU always uses full EIP for code fetch so this should work. CS segment limit should be extended first. Because of 8086-emulation, every jump, call, ret should use 32-bit operand size to work (otherwise EIP HI zeroed). Interestingly, CPU even honors the 66h prefix for short jump and works correctly in high memory. 
 
-<img width="640" height="400" alt="run16above" src="https://github.com/user-attachments/assets/65d12779-70ec-4853-a0c2-5c28a862d70c" />
+
+
+
+
+
 
 
 
