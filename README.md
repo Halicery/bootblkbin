@@ -56,6 +56,13 @@ I abandoned writing physical floppies and boot another PC long ago..
 
 ----------------
 
+# Bootblk files - incomplete and not in a particular order
+
+## 64-bit mode
+
+I always wondered.. how to switch the CPU into 64-bit mode and how it is working. I think AMD made a wonderful job: 64-bit mode on top of a 32-bit processor is likely genuine as the 386 was build on top of the 8086. As Intel did in 1985: not a distinct mode but the CPU is both a 32- and 16-bit processor at the same time. Well, 64-bit mode is not that simple though honors 66h prefic and can do stuff in the 16-bit way. 
+
+
 ## Multi-core 
 
 Attepts to start other processor cores and do some tests. Local APIC programming. First just run AP code in RM. Then switch AP-s to 32-bit protected mode, use IDT-style interrupts, test APIC Timer. 
