@@ -54,37 +54,31 @@ If BIOS can do network boot the PC is ready to go. Boot with PXE. I use the exce
  
 I abandoned writing physical floppies and boot another PC long ago..
 
------------
-
-### Some coding conventions
-
-#### Save code bytes 
-
-512 bytes are not much especially for 32-bit code. All offsets takes 4 bytes, etc. Sometimes really sqeezing and opt for code size sacrifying nice code.
-
-### Include files
-
-Files of `inc.xxxxxxxxx.asm` 
-
-After a while, certain code fragments just repeat: instead of copy/paste using NASM %include. Eg. the 16-bit prologue that prints out CPUID and the .asm file name. We write stuff on the char screen so 16/32/64-bit hex and string routines are always included. For other quick tests: 32- or 64-bit mode switch. A small one for APIC programming. Just comfortable.  
-
-### 16/32-bit assembly
-
-I tend to write 16-bit code with capital letters and 32-bit with small so it's easier to see where we're at:
-
-	rep stosd       <-- 32-bit D=1 code
-	                
-	REP STOSW       <-- 16-bit D=0 code
-
-### ALIGN n
-
-In bootblock we do not align anything to save code bytes. Also good for testing that Intel has no alignment requirements at all for any system structures. Even the stack works with odd address. 
-
 ----------------
 
-### [bootblkbin_run16above.asm](ASM/bootblkbin_run16above.asm)
+## Multi-core 
+
+Attepts to start other processor cores and do some tests. Local APIC programming. First just run AP code in RM. Then switch AP-s to 32-bit protected mode, use IDT-style interrupts, test APIC Timer. 
+
+### bootblkbin_cores16.asm
+
+[<img width="50%" src="SCREENSHOT/cores16.png" />](https://github.com/Halicery/bootblkbin/blob/main/SCREENSHOT/cores16.png)
+
+[bootblkbin_cores16.asm](ASM/bootblkbin_cores16.asm)
+
+### bootblkbin_cores32_apic.asm
+
+[<img width="50%" src="SCREENSHOT/cores32_apic.png" />](https://github.com/Halicery/bootblkbin/blob/main/SCREENSHOT/cores32_apic.png)
+
+[bootblkbin_cores32_apic.asm](ASM/bootblkbin_cores32_apic.asm)
+
+## 16-bit fiddling
+
+### bootblkbin_run16above.asm
 
 [<img width="50%" src="SCREENSHOT/run16above.png" />](https://github.com/Halicery/bootblkbin/blob/main/SCREENSHOT/run16above.png)
+
+[bootblkbin_run16above.asm](ASM/bootblkbin_run16above.asm)
 
 I was wondering how to execute D=0 16-bit code way above 1MB high in memory. CPU always uses full EIP for code fetch so this should work. CS segment limit should be extended first. Because of 8086-emulation, every jump, call, ret should use 32-bit operand size to work (otherwise EIP HI zeroed). Interestingly, CPU even honors the 66h prefix for short jump and works correctly in high memory. 
 
