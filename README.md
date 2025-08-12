@@ -60,7 +60,24 @@ I abandoned writing physical floppies and boot another PC long ago..
 
 ## 64-bit mode
 
-I always wondered.. how to switch the CPU into 64-bit mode and how it is working. I think AMD made a wonderful job: 64-bit mode on top of a 32-bit processor is likely genuine as the 386 was build on top of the 8086. As Intel did in 1985: not a distinct mode but the CPU is both a 32- and 16-bit processor at the same time. Well, 64-bit mode is not that simple though honors 66h prefic and can do stuff in the 16-bit way. 
+I always wondered.. what 64-bit mode is, how it is working, is there any benefit for bare metal and how to switch the CPU into 64-bit mode. Because the whole point is to address more than 4GB continuous memory, every effective address calculation is 64-bit. Therefore every registers, pointers in system strucures are 64-bit.. and so on. Tough topic. I think AMD made a wonderful job. 64-bit mode on top of a 32-bit processor is likely genuine as the 386 was build around 1985 by Intel on top of the 16-bit 8086: not a distinct mode but the CPU is both a 32- and 16-bit processor at the same time. 
+
+### bootblkbin_just64.asm
+
+[<img width="50%" src="SCREENSHOT/just64.png" />](https://github.com/Halicery/bootblkbin/blob/main/SCREENSHOT/just64.png)
+
+[bootblkbin_just64.asm](ASM/bootblkbin_just64.asm)
+
+Switch to 64-bit mode and execute a few 64-bit instructions in `[BITS 64]`. 
+
+- It requires paging tables, directories and CR3 set up
+- CR0.PG to set
+- Enable CR4.PAE page address extensions
+- Enable Long Mode bit in MSR EFER 0xC0000080
+- Only in protected mode CR0.PE=1
+- then transfer to 64-bit code L=1
+
+What I did - for bare metal - is to linear map the lower 4GB of memory with page tables, just to use the CPU, hardware and memory as it is in 32-bit mode. 
 
 
 ## Multi-core 
