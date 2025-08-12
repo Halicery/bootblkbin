@@ -47,8 +47,8 @@ GO64:
   push rax                    ; qword push
   mov edi, 0xb8000 + 160*8    ; line 8
   mov esi, esp
-  ;call outhex64    ; we do not bother restoring stack
-  call dumphex64   ; we do not bother restoring stack
+  call outhex64    ; we do not bother restoring stack
+  ;call dumphex64   ; we do not bother restoring stack
   
   
   ; test outhex64nz 

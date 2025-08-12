@@ -1,8 +1,8 @@
 Every file has the nasm command at the first line. 
 
-### Some coding conventions
+## Some coding conventions
 
-#### Save code bytes 
+### Save code bytes 
 
 512 bytes are not much especially for 32-bit code. All offsets takes 4 bytes, etc. Sometimes really sqeezing and opt for code size sacrifying nice code.
 
