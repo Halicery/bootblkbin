@@ -77,7 +77,7 @@ Switch to 64-bit mode and execute a few 64-bit instructions in `[BITS 64]`.
 - Only in protected mode CR0.PE=1
 - then transfer to 64-bit code L=1
 
-What I did - for bare metal - is to linear map the lower 4GB of memory with page tables, just to use the CPU, hardware and memory as it is in 32-bit mode. 
+What I did - for bare metal - is to linear map the lower 4GB of memory with page tables, just to use the CPU, hardware and memory as it is in 32-bit mode. See [inc.EnableLongModePML4E16.asm](ASM/inc.EnableLongModePML4E16.asm).  
 
 
 ## Multi-core 
