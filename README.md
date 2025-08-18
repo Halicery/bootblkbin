@@ -106,11 +106,10 @@ Attepts to start other processor cores and do some tests. Local APIC programming
 
 I was wondering how to execute D=0 16-bit code way above 1MB high in memory. CPU always uses full EIP for code fetch so this should work. CS segment limit should be extended first. Because of 8086-emulation, every jump, call, ret should use 32-bit operand size to work (otherwise EIP HI zeroed). Interestingly, CPU even honors the 66h prefix for short jump and works correctly in high memory. 
 
+## VESA Linear Frame Buffer graphics
 
+Good ol' VESA VBE graphics modes are still supported in many PC BIOS - including Hyper-V and Virtual Box. It's fairly easy to get some Direct Color mode with Linear Frame Buffer. INT 10 then using 32/64-bit code to write and manipulate pixels. My favourites for testing are 16-bpp modes, 2 bytes per pixel, standard like 640x480, 800x600 or 1024x768. No space for VBE queries here, error handling, just set mode right away - and hope for the best. 
 
-
-
-
-
+[<img width="50%" src="SCREENSHOT/just64_vesa.png" />](https://github.com/Halicery/bootblkbin/blob/main/SCREENSHOT/just64_vesa.png)[<img width="50%" src="SCREENSHOT/vesa_clock4.png" />](https://github.com/Halicery/bootblkbin/blob/main/SCREENSHOT/vesa_clock4.png)
 
 
